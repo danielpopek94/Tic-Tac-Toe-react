@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-
+let coords = [0,0];
 function Square(props) {
   return (
     <button className="square" onClick={props.onClick}>
       {props.value}
+      
     </button>
   );
 }
@@ -50,14 +51,36 @@ class Game extends React.Component {
       history: [{
         squares: Array(9).fill(null)
       }],
+      stepNumber: 0,
       xIsNext: true
     };
   }
 
   handleClick(i) {
-    const history = this.state.history;
-    const current = history[history.length - 1];
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const current = history[this.state.stepNumber];
     const squares = current.squares.slice();
+
+    if(i===0 || i===1 || i===2){
+      coords[1]=1;
+    }
+    else if(i===3 || i===4 || i===5){
+      coords[1]=2;
+    }
+    else if(i===6 || i===7 || i===8){
+      coords[1]=3;
+    };
+
+    if(i===0 || i===3 || i===6){
+      coords[0]=1;
+    }
+    else if(i===1 || i===4 || i===7){
+      coords[0]=2;
+    }
+    else if(i===2 || i===5 || i===8){
+      coords[0]=3;
+    }
+    
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
@@ -66,18 +89,24 @@ class Game extends React.Component {
       history: history.concat([{
         squares: squares
       }]),
+      stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
     });
   }
   
+  jumpTo(step){
+    this.setState({
+      stepNumber: step,
+      xIsNext: (step % 2) === 0,
+    });
+  }
   render() {
     const history = this.state.history;
-    const current = history[history.length - 1];
+    const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-
     const moves = history.map((step, move) => {
       const desc = move ?
-        'Przejdź do ruchu #' + move :
+        'Przejdź do ruchu #' + move + ' ('+coords+')':
         'Przejdź na początek gry';
       return (
         <li key={move}>
@@ -92,7 +121,6 @@ class Game extends React.Component {
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
-
     return (
       <div className="game">
         <div className="game-board">
