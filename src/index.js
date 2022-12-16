@@ -109,7 +109,8 @@ class Game extends React.Component {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-
+    
+    console.log('usunmnie');
     const moves = history.map((step, move) => {
       const desc = move ? 
         'Przejdź do ruchu #' + move + ' ('+coords[move-1]+')':
