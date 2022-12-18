@@ -25,9 +25,6 @@ class Board extends React.Component {
   }
   
   render() {
-    console.log('ddasd');
-    console.log('ddasd');
-    console.log('ddasd');
     return (
       <div>
         <div className="board-row">
