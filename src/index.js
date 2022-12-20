@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 
-let coords = [[],[],[],[],[],[],[],[],[]];
+let coords = Array(9).fill([]);
 
 
 function Square(props) {
@@ -23,28 +23,23 @@ class Board extends React.Component {
       />
     );
   }
-  
-  render() {
 
-    return (
-      <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
+  renderBoard() {
+    let board = [];
+
+    for (let i = 0; i < 3; i++) {
+      let row = [];
+      for (let j = 0; j < 3; j++) {
+        row.push(this.renderSquare(i * 3 + j));
+      }
+      board.push(<div className="board-row">{row}</div>);
+    }
+
+    return board;
+  }
+
+  render() {
+    return <div>{this.renderBoard()}</div>;
   }
 }
 
@@ -62,31 +57,16 @@ class Game extends React.Component {
 
   handleClick(i) {
     const stepIndex = this.state.stepNumber;
-    
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[this.state.stepNumber];
     const squares = current.squares.slice();
-
-    if(i===0 || i===1 || i===2){
-      coords[stepIndex][1]=1;
-    }
-    else if(i===3 || i===4 || i===5){
-      coords[stepIndex][1]=2;
-    }
-    else if(i===6 || i===7 || i===8){
-      coords[stepIndex][1]=3;
-    };
-
-    if(i===0 || i===3 || i===6){
-      coords[stepIndex][0]=1;
-    }
-    else if(i===1 || i===4 || i===7){
-      coords[stepIndex][0]=2;
-    }
-    else if(i===2 || i===5 || i===8){
-      coords[stepIndex][0]=3;
-    }
-    
+  
+    // Obliczanie współrzędnych x i y dla pola o indeksie 'i'
+    let x = Math.floor(i / 3) + 1;
+    let y = (i % 3) + 1;
+  
+    coords[stepIndex] = [x, y];
+  
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
@@ -100,27 +80,32 @@ class Game extends React.Component {
     });
   }
   
+  
   jumpTo(step){
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
     });
   }
+
+  
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-    
     const moves = history.map((step, move) => {
       const desc = move ? 
         'Przejdź do ruchu #' + move + ' ('+coords[move-1]+')':
         'Przejdź na początek gry';
       return (
+        <div className='stepButtons'>
+        {move!=0?false:<button onClick={reverseList()}>{'Sortuj'}</button>}
         <li key={move}>
-          <button 
+        <button 
             style={{fontWeight: move+1==history.length?'bold':'normal'}}
             onClick={() => this.jumpTo(move)}>{desc}</button>
         </li>
+        </div>
       );
     });
 
@@ -171,3 +156,21 @@ function calculateWinner(squares) {
   }
   return null;
 }
+
+function reverseList() {
+  console.log('chuj');
+    let list = document.querySelectorAll('.stepButtons');
+    let reversedList = [];
+  
+    for (let i = list.length - 1; i >= 0; i--) {
+      reversedList.push(list[i]);
+    }
+  
+    for (let i = 0; i < list.length; i++) {
+      list[i].remove();
+    }
+    
+    for (let i = 0; i < reversedList.length; i++) {
+      document.querySelector('ol').appendChild(reversedList[i]);
+    }
+ }
