@@ -98,15 +98,13 @@ class Game extends React.Component {
         'Przejdź do ruchu #' + move + ' ('+coords[move-1]+')':
         'Przejdź na początek gry';
       return (
-        <div className='stepButtons'>
-        {move!=0?false:<button onClick={reverseList()}>{'Sortuj'}</button>}
         <li key={move}>
         <button 
-            style={{fontWeight: move+1==history.length?'bold':'normal'}}
+            style={{fontWeight: move+1===history.length?'bold':'normal'}}
             onClick={() => this.jumpTo(move)}>{desc}</button>
         </li>
-        </div>
       );
+      
     });
 
     let status;
@@ -156,21 +154,3 @@ function calculateWinner(squares) {
   }
   return null;
 }
-
-function reverseList() {
-  console.log('chuj');
-    let list = document.querySelectorAll('.stepButtons');
-    let reversedList = [];
-  
-    for (let i = list.length - 1; i >= 0; i--) {
-      reversedList.push(list[i]);
-    }
-  
-    for (let i = 0; i < list.length; i++) {
-      list[i].remove();
-    }
-    
-    for (let i = 0; i < reversedList.length; i++) {
-      document.querySelector('ol').appendChild(reversedList[i]);
-    }
- }
